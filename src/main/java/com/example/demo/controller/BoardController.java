@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.time.*;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.*;
@@ -18,8 +19,8 @@ public class BoardController {
 	@Autowired
 	private BoardService service;
 	
-	// 경로 : http://localhost:8080
-	// 경로 : http://localhost:8080/list
+	// 경로 : http://localhost:8080?page=3
+	// 경로 : http://localhost:8080/list?page=5
 	// 게시물 목록
 	// @RequestMapping(value = {"/", "list"}, method = RequestMethod.GET)
 
@@ -64,11 +65,12 @@ public class BoardController {
 		
 		if (ok) {
 			// 해당 게시물 보기로 리디렉션
-			rttr.addAttribute("success", "success");
+			rttr.addFlashAttribute("message", board.getId() + "번 게시물이 수정되었습니다.");
 			return "redirect:/id/" + board.getId(); 
 		} else {
 			// 수정 form 으로 리디렉션
-			rttr.addAttribute("fail", "fail");
+//			rttr.addAttribute("fail", "fail");
+			rttr.addFlashAttribute("message", board.getId() + "번 게시물이 수정되지 않았습니다.");
 			return "redirect:/modify/" + board.getId();
 		}
 	}
@@ -78,10 +80,38 @@ public class BoardController {
 	public String remove(Integer id, RedirectAttributes rttr) {
 		boolean ok = service.remove(id);
 		if (ok) {
-			rttr.addAttribute("success", "remove");
+			// query String 에 추가
+//			rttr.addAttribute("success", "remove");
+			
+			// 모델에 추가
+			rttr.addFlashAttribute("message", id + "번 게시물이 삭제되었습니다.");
 			return "redirect:/list";
 		} else {
 			return "redirect:/id" + id;
 		}
 	}
+	
+	// 인서트하기
+	@GetMapping("add")
+	public void addForm(Board board) {
+		// 게시물 작성 form (view)로 포워드
+
+		
+	}
+	
+	@PostMapping("add")
+	public String addProcess(Board board, RedirectAttributes rttr) {
+		// 새 게시물 db에 추가
+		boolean ok = service.add(board);
+		
+		if (ok) {
+			rttr.addFlashAttribute("message", board.getId() + "번 게시물이 등록되었습니다.");
+			return "redirect:/list";
+//			return "redirect:/id/" + board.getId();
+		} else {
+			rttr.addFlashAttribute("message", board.getId() + "게시물 등록 중 문제가 발생하였습니다.");
+			return "redirect:/add";
+		}
+	}
+	
 }
