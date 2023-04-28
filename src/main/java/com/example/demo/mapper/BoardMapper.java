@@ -10,7 +10,7 @@ import com.example.demo.domain.*;
 public interface BoardMapper {
 
 	@Select("""
-			SELECT 
+			SELECT
 				id,
 				title,
 				writer,
@@ -29,7 +29,7 @@ public interface BoardMapper {
 
 	@Update("""
 			UPDATE Board
-			SET
+			SET 
 				title = #{title},
 				body = #{body},
 				writer = #{writer}
@@ -43,12 +43,46 @@ public interface BoardMapper {
 			WHERE id = #{id}
 			""")
 	int deleteById(Integer id);
-	
+
 	@Insert("""
-			INSERT INTO
-			Board (title, body, writer)
+			INSERT INTO Board (title, body, writer)
 			VALUES (#{title}, #{body}, #{writer})
 			""")
 	@Options(useGeneratedKeys = true, keyProperty = "id")
-	int addById(Board board);
+	int insert(Board board);
+
+	@Select("""
+			<script>
+			<bind name="pattern" value="'%' + search + '%'" />
+			SELECT
+				id,
+				title,
+				writer,
+				inserted
+			FROM Board
+			WHERE 
+					title LIKE #{pattern}
+				OR body   LIKE #{pattern}
+				OR writer LIKE #{pattern}
+			ORDER BY id DESC
+			LIMIT #{startIndex}, #{rowPerPage}
+			</script>
+			""")
+	List<Board> selectAllPaging(Integer startIndex, Integer rowPerPage, String search);
+
+	@Select("""
+			<script>
+			<bind name="pattern" value="'%' + search + '%'" />
+			SELECT COUNT(*) 
+			FROM Board
+			WHERE 
+					title LIKE #{pattern}
+				OR body   LIKE #{pattern}
+				OR writer LIKE #{pattern}
+			</script>
+			""")
+	Integer countAll(String search);
+	
+
+	
 }
