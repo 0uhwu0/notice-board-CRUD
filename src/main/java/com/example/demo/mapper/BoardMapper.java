@@ -21,10 +21,17 @@ public interface BoardMapper {
 	List<Board> selectAll();
 
 	@Select("""
-			SELECT *
-			FROM Board
-			WHERE id = #{id}
+			SELECT 
+				b.id,
+				b.title,
+				b.body,
+				b.inserted,
+				b.writer,
+				f.fileName
+			FROM Board b LEFT JOIN FileName f ON b.id = f.boardId
+			WHERE b.id = #{id}
 			""")
+	@ResultMap("boardResultMap")
 	Board selectById(Integer id);
 
 	@Update("""
@@ -55,10 +62,36 @@ public interface BoardMapper {
 			<script>
 			<bind name="pattern" value="'%' + search + '%'" />
 			SELECT
-				id,
-				title,
-				writer,
-				inserted
+				b.id,
+				b.title,
+				b.writer,
+				b.inserted,
+				COUNT(f.id) fileCount
+			FROM Board b LEFT JOIN FileName f ON b.id = f.boardId
+			
+			<where>
+				<if test="(type eq 'all') or (type eq 'title')">
+				   title  LIKE #{pattern}
+				</if>
+				<if test="(type eq 'all') or (type eq 'body')">
+				OR body   LIKE #{pattern}
+				</if>
+				<if test="(type eq 'all') or (type eq 'writer')">
+				OR writer LIKE #{pattern}
+				</if>
+			</where>
+			
+			GROUP BY b.id
+			ORDER BY b.id DESC
+			LIMIT #{startIndex}, #{rowPerPage}
+			</script>
+			""")
+	List<Board> selectAllPaging(Integer startIndex, Integer rowPerPage, String search, String type);
+
+	@Select("""
+			<script>
+			<bind name="pattern" value="'%' + search + '%'" />
+			SELECT COUNT(*) 
 			FROM Board
 			
 			<where>
@@ -73,29 +106,35 @@ public interface BoardMapper {
 				</if>
 			</where>
 			
-			ORDER BY id DESC
-			LIMIT #{startIndex}, #{rowPerPage}
-			</script>
-			""")
-	List<Board> selectAllPaging(Integer startIndex, Integer rowPerPage, String search, String type);
-
-	@Select("""
-			<script>
-			<bind name="pattern" value="'%' + search + '%'" />
-			SELECT COUNT(*) 
-			FROM Board
-				<where>
-				<if test="(type eq 'all') or (type eq 'title')">
-				   title  LIKE #{pattern}
-				</if>
-				<if test="(type eq 'all') or (type eq 'body')">
-				OR body   LIKE #{pattern}
-				</if>
-				<if test="(type eq 'all') or (type eq 'writer')">
-				OR writer LIKE #{pattern}
-				</if>
-			</where>
 			</script>
 			""")
 	Integer countAll(String search, String type);
+
+	@Insert("""
+			INSERT INTO FileName (boardId, fileName)
+			VALUES (#{boardId}, #{fileName})
+			""")
+	Integer insertFileName(Integer boardId, String fileName);
+
+	@Select("""
+			SELECT fileName FROM FileName
+			WHERE boardId = #{boardId}
+			""")
+	List<String> selectFileNamesByBoardId(Integer boardId);
+
+	@Delete("""
+			DELETE FROM FileName
+			WHERE boardId = #{boardId}
+			""")
+	void deleteFileNameByBoard(Integer boardId);
+
+	@Delete("""
+			DELETE FROM FileName
+			WHERE boardId = #{boardId}
+				AND fileName = #{fileName}
+			""")
+	void deleteFileNameByBoardAndFileName(Integer boardId, String fileName);
+	
+
+	
 }

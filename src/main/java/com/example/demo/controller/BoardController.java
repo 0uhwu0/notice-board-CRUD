@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 import org.springframework.ui.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.*;
 import org.springframework.web.servlet.mvc.support.*;
 
 import com.example.demo.domain.*;
@@ -60,9 +61,13 @@ public class BoardController {
 
 //	@RequestMapping(value = "/modify/{id}", method = RequestMethod.POST)
 	@PostMapping("/modify/{id}")
-	public String modifyProcess(Board board, RedirectAttributes rttr) {
-
-		boolean ok = service.modify(board);
+	public String modifyProcess(Board board, 
+			@RequestParam(value = "files", required = false) MultipartFile[] addFiles,
+			@RequestParam(value = "removeFiles", required = false) List<String> removeFileNames,
+			RedirectAttributes rttr) throws Exception {
+		
+		System.out.println(removeFileNames);
+		boolean ok = service.modify(board, addFiles, removeFileNames);
 
 		if (ok) {
 			// 해당 게시물 보기로 리디렉션
@@ -99,11 +104,13 @@ public class BoardController {
 	}
 
 	@PostMapping("add")
-	public String addProcess(Board board, RedirectAttributes rttr) {
+	public String addProcess(
+			@RequestParam("files") MultipartFile[] files,
+			Board board, RedirectAttributes rttr) throws Exception {
 		// 새 게시물 db에 추가
 		// 1.
 		// 2.
-		boolean ok = service.addBoard(board);
+		boolean ok = service.addBoard(board, files);
 		// 3.
 		// 4.
 		if (ok) {

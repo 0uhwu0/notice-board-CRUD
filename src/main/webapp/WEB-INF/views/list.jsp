@@ -32,7 +32,17 @@
 				<c:forEach items="${boardList }" var="board">
 					<tr>
 						<td>${board.id }</td>
-						<td><a href="/id/${board.id }"> ${board.title } </a></td>
+						<td>
+							<a href="/id/${board.id }"> ${board.title } </a>
+							
+							<c:if test="${board.fileCount > 0 }">
+								<span class="badge rounded-pill text-bg-info">
+									<i class="fa-regular fa-images"></i>
+									${board.fileCount }
+								</span>
+							</c:if>
+							
+						</td>
 						<td>${board.writer }</td>
 						<td>${board.inserted }</td>
 					</tr>
@@ -65,7 +75,7 @@
 						<my:pageItem pageNum="${pageInfo.currentPageNum + 1 }">
 							<i class="fa-solid fa-angle-right"></i>
 						</my:pageItem>
-
+					
 					</c:if>
 
 				</ul>
