@@ -14,19 +14,34 @@ public interface MemberMapper {
 			VALUES (#{id}, #{password}, #{nickName}, #{email})
 			""")
 	int insert(Member member);
-	
+
 	@Select("""
 			SELECT *
 			FROM Member
-			ORDER BY
-			inserted DESC
+			ORDER BY inserted DESC
 			""")
-	List<Member> selectAll(Member member);
-	
+	List<Member> selectAll();
+
 	@Select("""
-			SELECT * 
+			SELECT *
 			FROM Member
-			WHERE id=#{id}
+			WHERE id = #{id}
 			""")
 	Member selectById(String id);
+
+	@Delete("""
+			DELETE FROM Member
+			WHERE id = #{id}
+			""")
+	Integer deleteById(String id);
+
+	@Update("""
+			UPDATE Member
+			SET password = #{password},
+			    nickName = #{nickName},
+			    email = #{email}
+			WHERE
+				id = #{id}
+			""")
+	Integer update(Member member);
 }
