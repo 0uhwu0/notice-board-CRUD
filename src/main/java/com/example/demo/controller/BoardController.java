@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.security.access.prepost.*;
+import org.springframework.security.core.*;
 import org.springframework.stereotype.*;
 import org.springframework.ui.*;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +34,7 @@ public class BoardController {
 		// 2. business logic 처리
 		// List<Board> list = service.listBoard(); // 페이지 처리 전
 		Map<String, Object> result = service.listBoard(page, search, type); // 페이지 처리
-		
+
 		// 3. add attribute
 //		model.addAttribute("boardList", result.get("boardList"));
 //		model.addAttribute("pageInfo", result.get("pageInfo"));
@@ -54,6 +56,7 @@ public class BoardController {
 	}
 
 	@GetMapping("/modify/{id}")
+	@PreAuthorize("isAuthenticated() and @customSecurityChecker.checkBoardWriter(authentication, #id)")
 	public String modifyForm(@PathVariable("id") Integer id, Model model) {
 		model.addAttribute("board", service.getBoard(id));
 		return "modify";
@@ -61,12 +64,14 @@ public class BoardController {
 
 //	@RequestMapping(value = "/modify/{id}", method = RequestMethod.POST)
 	@PostMapping("/modify/{id}")
-	public String modifyProcess(Board board, 
+	@PreAuthorize("isAuthenticated() and @customSecurityChecker.checkBoardWriter(authentication, #board.id)")
+	
+	// 수정하려는 게시물 id : board.id
+	public String modifyProcess(Board board,
 			@RequestParam(value = "files", required = false) MultipartFile[] addFiles,
 			@RequestParam(value = "removeFiles", required = false) List<String> removeFileNames,
 			RedirectAttributes rttr) throws Exception {
 		
-		System.out.println(removeFileNames);
 		boolean ok = service.modify(board, addFiles, removeFileNames);
 
 		if (ok) {
@@ -83,6 +88,7 @@ public class BoardController {
 	}
 
 	@PostMapping("remove")
+	@PreAuthorize("isAuthenticated() and @customSecurityChecker.checkBoardWriter(authentication, #id)")
 	public String remove(Integer id, RedirectAttributes rttr) {
 		boolean ok = service.remove(id);
 		if (ok) {
@@ -99,17 +105,21 @@ public class BoardController {
 	}
 
 	@GetMapping("add")
+	@PreAuthorize("isAuthenticated()")
 	public void addForm() {
 		// 게시물 작성 form (view)로 포워드
 	}
 
 	@PostMapping("add")
+	@PreAuthorize("isAuthenticated()")
 	public String addProcess(
 			@RequestParam("files") MultipartFile[] files,
-			Board board, RedirectAttributes rttr) throws Exception {
+			Board board, RedirectAttributes rttr,
+			Authentication authentication) throws Exception {
 		// 새 게시물 db에 추가
 		// 1.
 		// 2.
+		board.setWriter(authentication.getName());
 		boolean ok = service.addBoard(board, files);
 		// 3.
 		// 4.

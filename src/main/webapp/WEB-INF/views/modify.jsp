@@ -52,8 +52,6 @@
 
 									<div class="col-10">
 										<div>
-											<%-- http://localhost:8080/image/4122/slamdunk.jfif --%>
-											<%-- http://localhost:8080/image/게시물번호/fileName --%>
 											<img class="img-thumbnail img-fluid" src="${bucketUrl }/${board.id }/${fileName}" alt="" />
 										</div>
 									</div>
@@ -65,10 +63,6 @@
 					<div class="mb-3">
 						<label for="bodyTextarea" class="form-label">본문</label>
 						<textarea class="form-control" id="bodyTextarea" rows="10" name="body">${board.body }</textarea>
-					</div>
-					<div class="mb-3">
-						<label class="form-label" for="writerInput">작성자</label>
-						<input class="form-control" id="writerInput" type="text" name="writer" value="${board.writer }" />
 					</div>
 					<div class="mb-3">
 						<label for="" class="form-label">작성일시</label>

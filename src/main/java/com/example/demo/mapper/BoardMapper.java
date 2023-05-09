@@ -38,8 +38,7 @@ public interface BoardMapper {
 			UPDATE Board
 			SET 
 				title = #{title},
-				body = #{body},
-				writer = #{writer}
+				body = #{body}
 			WHERE
 				id = #{id}
 			""")
@@ -123,17 +122,18 @@ public interface BoardMapper {
 	List<String> selectFileNamesByBoardId(Integer boardId);
 
 	@Delete("""
-			DELETE FROM FileName
+			DELETE FROM FileName 
 			WHERE boardId = #{boardId}
 			""")
-	void deleteFileNameByBoard(Integer boardId);
+	void deleteFileNameByBoardId(Integer boardId);
 
 	@Delete("""
 			DELETE FROM FileName
-			WHERE boardId = #{boardId}
+			WHERE 	boardId = #{boardId} 
 				AND fileName = #{fileName}
 			""")
-	void deleteFileNameByBoardAndFileName(Integer boardId, String fileName);
+
+	void deleteFileNameByBoardIdAndFileName(Integer boardId, String fileName);
 	
 
 	
