@@ -113,13 +113,14 @@ public class BoardController {
 	@PostMapping("add")
 	@PreAuthorize("isAuthenticated()")
 	public String addProcess(
-			@RequestParam("files") MultipartFile[] files,
+			@RequestParam("files") MultipartFile[] files, Member member,
 			Board board, RedirectAttributes rttr,
 			Authentication authentication) throws Exception {
 		// 새 게시물 db에 추가
 		// 1.
 		// 2.
 		board.setWriter(authentication.getName());
+
 		boolean ok = service.addBoard(board, files);
 		// 3.
 		// 4.

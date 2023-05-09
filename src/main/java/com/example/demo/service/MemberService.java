@@ -39,7 +39,7 @@ public class MemberService {
 	public Member get(String id) {
 		return mapper.selectById(id);
 	}
-
+	
 	public boolean remove(Member member) {
 		Member oldMember = mapper.selectById(member.getId());
 		int cnt = 0;
