@@ -24,9 +24,10 @@ public interface MemberMapper {
 
 	@Select("""
 			SELECT *
-			FROM Member
+			FROM Member m LEFT JOIN MemberAuthority ma ON m.id = ma.memberId
 			WHERE id = #{id}
 			""")
+	@ResultMap("memberMap")
 	Member selectById(String id);
 
 	@Delete("""
@@ -36,12 +37,20 @@ public interface MemberMapper {
 	Integer deleteById(String id);
 
 	@Update("""
+			<script>
+			
 			UPDATE Member
-			SET password = #{password},
+			SET 
+				<if test="password neq null and password neq ''">
+				password = #{password},
+				</if>
+				
 			    nickName = #{nickName},
 			    email = #{email}
 			WHERE
 				id = #{id}
+			
+			</script>
 			""")
 	Integer update(Member member);
 }
