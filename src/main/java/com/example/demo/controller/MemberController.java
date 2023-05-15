@@ -21,6 +21,27 @@ public class MemberController {
 	
 	@Autowired
 	private MemberService service;
+	
+	@GetMapping("checkId/{id}")
+	@ResponseBody
+	public Map<String, Object> checkId(@PathVariable("id") String id) {
+		
+		return service.checkId(id);
+	}
+	
+	@GetMapping("checkNickName/{nickName}")
+	@ResponseBody
+	public Map<String, Object> checkNickName(@PathVariable("nickName") String nickName) {
+		
+		return service.checkNickName(nickName);
+	}
+	
+	@GetMapping("checkEmail/{eMail}")
+	@ResponseBody
+	public Map<String, Object> checkEmail(@PathVariable("eMail") String eMail) {
+		
+		return service.checkEmail(eMail);
+	}
 
 	@GetMapping("signup")
 	@PreAuthorize("isAnonymous()")
