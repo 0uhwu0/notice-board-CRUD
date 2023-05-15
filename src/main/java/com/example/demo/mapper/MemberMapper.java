@@ -68,4 +68,5 @@ public interface MemberMapper {
 			""")
 	Member selectByEmail(String eMail);
 
+
 }
